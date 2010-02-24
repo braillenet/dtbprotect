@@ -1,3 +1,6 @@
 *.cmi
 *.cmo
 *.o
+._bcdi/
+._d/
+dtbprotect
