@@ -15,6 +15,7 @@
 
 open Dtb
 open Package
+open Filename
 
 type options = {
   input : string;
@@ -92,7 +93,7 @@ let check options =
   else if options.key="" then
     err_not_spec "public key"
   else if options.private_key_name="" then
-    err_not_spec "rivate key name"
+    err_not_spec "private key name"
   else ()
 
 let cp src dst =
