@@ -29,7 +29,7 @@ SOURCES = \
 
 RESULT = dtbprotect
 PACKS = unix
-CFLAGS = -g -O0 -Wall $(shell pkg-config --cflags xmlsec1 | sed "s/\(\\\\\".*\\\\\"\)/\'\1\'/g")
+CFLAGS = -g -O0 -Wall -DXMLSEC_NO_SIZE_T -DXMLSEC_CRYPTO_OPENSSL -I/usr/include/libxml2 -I/usr/include/xmlsec1 $(shell pkg-config --cflags xmlsec1 | sed "s/\(\\\\\".*\\\\\"\)/\'\1\'/g")
 CLIBS = xmlsec1-openssl xmlsec1 ssl crypto xslt xml2
 
 include OCamlMakefile
