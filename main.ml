@@ -105,7 +105,7 @@ let cp src dst =
 let main options =
   check options;
   let aesKey = Xmlsec.Key.generate None 128 Xmlsec.Key.keyDataTypeSession in
-  let input_directory = (Filename.dirname options.input) ^ "/" in
+  let input_directory = Filename.dirname options.input in
   let input_package = Package.load options.input in
   let authorisation = Filename.concat options.output "book.ao" in
   let ao = {
@@ -175,7 +175,7 @@ let main options =
     }]
   in
   let process_manifest_item i =
-    let infile = input_directory ^ i.href in
+    let infile = Filename.concat input_directory i.href in
     let outfile = Filename.concat options.output i.href in
     match i.mediaType with
       | "application/smil" ->
@@ -204,7 +204,7 @@ let main options =
         abort msg
   in
   List.iter process_manifest_item input_package.manifest;
-  let inf = input_directory ^ input_package.ncx.ncx_href in
+  let inf = Filename.concat input_directory input_package.ncx.ncx_href in
   if options.encrypt_ncx then begin
     let outf = Filename.concat options.output "book.pncx" in
     Xmlsec.encryptFile aesKey inf outf
