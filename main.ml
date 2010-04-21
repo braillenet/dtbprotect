@@ -15,7 +15,6 @@
 
 open Dtb
 open Package
-open Filename
 
 type options = {
   input : string;
@@ -108,7 +107,7 @@ let main options =
   let aesKey = Xmlsec.Key.generate None 128 Xmlsec.Key.keyDataTypeSession in
   let input_directory = (Filename.dirname options.input) ^ "/" in
   let input_package = Package.load options.input in
-  let authorisation = options.output ^ "book.ao" in
+  let authorisation = Filename.concat options.output "book.ao" in
   let ao = {
     AuthorisationObject.bookIdentifier =
     begin
@@ -177,7 +176,7 @@ let main options =
   in
   let process_manifest_item i =
     let infile = input_directory ^ i.href in
-    let outfile = options.output ^ i.href in
+    let outfile = Filename.concat options.output i.href in
     match i.mediaType with
       | "application/smil" ->
         if options.encrypt_smil then begin
@@ -207,10 +206,10 @@ let main options =
   List.iter process_manifest_item input_package.manifest;
   let inf = input_directory ^ input_package.ncx.ncx_href in
   if options.encrypt_ncx then begin
-    let outf = options.output ^ "book.pncx" in
+    let outf = Filename.concat options.output "book.pncx" in
     Xmlsec.encryptFile aesKey inf outf
   end else begin
-    let outf = options.output ^ "book.ncx" in
+    let outf = Filename.concat options.output "book.ncx" in
     cp inf outf
   end;
   let protected_ncx = 
@@ -242,8 +241,8 @@ let main options =
     guide = input_package.guide    
   }
   in
-  Package.save (options.output ^ "package.ppf") protected_package;
-  Package.save (options.output ^ "package.opf") facade
+  Package.save (Filename.concat options.output "package.ppf") protected_package;
+  Package.save (Filename.concat options.output "package.opf") facade
 
 let xmlsecInit () =
   let f code what =
