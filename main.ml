@@ -22,7 +22,9 @@ type options = {
   key : string;
   private_key_name : string;
   encrypt_ncx : bool;
-  encrypt_smil : bool
+  encrypt_smil : bool;
+  issuer_name : string;
+  issuer_identifier : string
 }
 
 let options_initializer = {
@@ -31,7 +33,9 @@ let options_initializer = {
   key = "";
   private_key_name = "";
   encrypt_ncx = false;
-  encrypt_smil = false
+  encrypt_smil = false;
+  issuer_name = "";
+  issuer_identifier = ""
 }
 
 let abort msg =
@@ -76,7 +80,18 @@ let parse_command_line arguments =
         | x::xs ->
           f { options with private_key_name = x } xs  
       end
-
+    | "--issuer_name"::rem ->
+      begin match rem with
+        | [] -> err_missing_argument "--issuer_name"
+        | x::xs ->
+          f { options with issuer_name = x } xs
+      end
+    | "--issuer_identifier"::rem ->
+      begin match rem with
+        | [] -> err_missing_argument "--issuer_identifier"
+        | x::xs ->
+          f { options with issuer_identifier = x } xs
+      end
     | "--encrypt-ncx"::xs ->
       f { options with encrypt_ncx = true } xs
     | "--encrypt-smil"::xs ->
@@ -93,6 +108,10 @@ let check options =
     err_not_spec "public key"
   else if options.private_key_name="" then
     err_not_spec "private key name"
+  else if options.issuer_name="" then
+    err_not_spec "issuer name"
+  else if options.issuer_identifier="" then
+    err_not_spec "issuer identifier"
   else ()
 
 let cp src dst =
@@ -116,8 +135,8 @@ let main options =
       )
       with Not_found -> abort "Could not find identifier for input book"
     end;
-    AuthorisationObject.issuerName = "Association BrailleNet";
-    AuthorisationObject.issuerIdentifier = "daisy.fr.braillenet";
+    AuthorisationObject.issuerName = options.issuer_name;
+    AuthorisationObject.issuerIdentifier = options.issuer_identifier;
     AuthorisationObject.aesKey = aesKey;
     AuthorisationObject.rsaPublicKeyFile = options.key;
     AuthorisationObject.rsaPrivateKeyName = options.private_key_name
